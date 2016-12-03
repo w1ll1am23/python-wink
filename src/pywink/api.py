@@ -9,7 +9,7 @@ from pywink.devices.sensors import WinkSensorPod, WinkHumiditySensor, WinkBright
     WinkTemperatureSensor, WinkVibrationPresenceSensor, \
     WinkLiquidPresenceSensor, WinkCurrencySensor, WinkMotionSensor, \
     WinkPresenceSensor, WinkProximitySensor, WinkSmokeDetector, \
-    WinkCoDetector
+    WinkCoDetector, WinkHub
 from pywink.devices.types import DEVICE_ID_KEYS
 
 API_HEADERS = {}
@@ -182,6 +182,10 @@ def get_thermostats():
     return get_devices(device_types.THERMOSTAT)
 
 
+def get_hubs():
+    return get_devices(device_types.HUB)
+
+
 def get_subscription_key():
     response_dict = wink_api_fetch()
     first_device = response_dict.get('data')[0]
@@ -221,37 +225,43 @@ def get_devices_from_response_dict(response_dict, filter_key):
 
     devices = []
 
-    keys = DEVICE_ID_KEYS.values()
-    if filter_key:
-        keys = [filter_key]
+    keys = list(DEVICE_ID_KEYS.values())
 
     api_interface = WinkApiInterface()
 
     for item in items:
-        for key in keys:
-            if not __device_is_visible(item, key):
-                continue
+        if item.get(filter_key, None) is None:
+            continue
+        elif not __device_is_visible(item, filter_key):
+            continue
 
-            if key == "powerstrip_id":
-                devices.extend(__get_outlets_from_powerstrip(item, api_interface))
-                continue  # Don't capture the powerstrip itself as a device, only the individual outlets
+        elif filter_key == "powerstrip_id":
+            devices.extend(__get_outlets_from_powerstrip(item, api_interface))
 
-            if key == "sensor_pod_id":
-                subsensors = _get_subsensors_from_sensor_pod(item, api_interface)
-                if subsensors:
-                    devices.extend(subsensors)
-                    continue  # Don't capture the base device
-                if len(subsensors) == 1:
+        elif filter_key == "sensor_pod_id":
+            subsensors = _get_subsensors_from_sensor_pod(item, api_interface)
+            if subsensors:
+                devices.extend(subsensors)
+
+        elif filter_key == "piggy_bank_id":
+            devices.extend(__get_devices_from_piggy_bank(item, api_interface))
+
+        elif filter_key == "smoke_detector_id":
+            devices.extend(__get_subsensors_from_smoke_detector(item, api_interface))
+
+        elif filter_key == "hub_id":
+            skip = False
+            for key in keys:
+                if key == "hub_id":
                     continue
+                if item.get(key, None) is not None:
+                    skip = True
+            if skip:
+                continue
+            else:
+                devices.append(build_device(item, api_interface))
 
-            if key == "piggy_bank_id":
-                devices.extend(__get_devices_from_piggy_bank(item, api_interface))
-                continue  # Don't capture the porkfolio itself as a device
-
-            if key == "smoke_detector_id":
-                devices.extend(__get_subsensors_from_smoke_detector(item, api_interface))
-                continue  # Don't capture the base device
-
+        else:
             devices.append(build_device(item, api_interface))
 
     return devices
