@@ -225,49 +225,50 @@ def get_devices_from_response_dict(response_dict, filter_key):
 
     devices = []
 
-    keys = list(DEVICE_ID_KEYS.values())
-
     api_interface = WinkApiInterface()
+
+    keys = ['powerstrip_id', 'sensor_pod_id', 'piggy_bank_id',
+            'smoke_detector_id', 'hub_id']
 
     for item in items:
         if item.get(filter_key, None) is None:
             continue
         elif not __device_is_visible(item, filter_key):
             continue
-
-        elif filter_key == "powerstrip_id":
-            devices.extend(__get_outlets_from_powerstrip(item, api_interface))
-
-        elif filter_key == "sensor_pod_id":
-            subsensors = _get_subsensors_from_sensor_pod(item, api_interface)
-            if subsensors:
-                devices.extend(subsensors)
-
-        elif filter_key == "piggy_bank_id":
-            devices.extend(__get_devices_from_piggy_bank(item, api_interface))
-
-        elif filter_key == "smoke_detector_id":
-            devices.extend(__get_subsensors_from_smoke_detector(item, api_interface))
-
-        elif filter_key == "hub_id":
-            skip = False
-            for key in keys:
-                if key == "hub_id":
-                    continue
-                if item.get(key, None) is not None:
-                    skip = True
-            if skip:
-                continue
-            else:
-                devices.append(build_device(item, api_interface))
-
+        elif filter_key in keys:
+            devices.extend(__get_outlets_from_powerstrip(item, api_interface, filter_key))
+            devices.extend(__get_subsensors_from_sensor_pod(item, api_interface, filter_key))
+            devices.extend(__get_devices_from_piggy_bank(item, api_interface, filter_key))
+            devices.extend(__get_subsensors_from_smoke_detector(item, api_interface, filter_key))
+            devices.extend(__get_sensor_from_hub(item, api_interface, filter_key))
         else:
             devices.append(build_device(item, api_interface))
 
     return devices
 
 
-def _get_subsensors_from_sensor_pod(item, api_interface):
+def __get_sensor_from_hub(item, api_interface, filter_key):
+    if filter_key != 'hub_id':
+        return []
+    keys = list(DEVICE_ID_KEYS.values())
+    # Most devices have a hub_id, but we only want the actual hub.
+    # This will only return hubs by checking for any other keys
+    # being present along with the hub_id
+    skip = False
+    for key in keys:
+        if key == "hub_id":
+            continue
+        if item.get(key, None) is not None:
+            skip = True
+    if skip:
+        return []
+    else:
+        return [WinkHub(item, api_interface)]
+
+
+def __get_subsensors_from_sensor_pod(item, api_interface, filter_key):
+    if filter_key != 'sensor_pod_id':
+        return []
 
     capabilities = [cap['field'] for cap in item.get('capabilities', {}).get('fields', [])]
     capabilities.extend([cap['field'] for cap in item.get('capabilities', {}).get('sensor_types', [])])
@@ -310,7 +311,9 @@ def _get_subsensors_from_sensor_pod(item, api_interface):
     return subsensors
 
 
-def __get_outlets_from_powerstrip(item, api_interface):
+def __get_outlets_from_powerstrip(item, api_interface, filter_key):
+    if filter_key != 'powerstrip_id':
+        return []
     outlets = item['outlets']
     for outlet in outlets:
         if 'subscription' in item:
@@ -319,14 +322,18 @@ def __get_outlets_from_powerstrip(item, api_interface):
     return [build_device(outlet, api_interface) for outlet in outlets if __device_is_visible(outlet, 'outlet_id')]
 
 
-def __get_devices_from_piggy_bank(item, api_interface):
+def __get_devices_from_piggy_bank(item, api_interface, filter_key):
+    if filter_key != 'piggy_bank_id':
+        return []
     subdevices = []
     subdevices.append(WinkCurrencySensor(item, api_interface))
     subdevices.append(WinkPorkfolioNose(item, api_interface))
     return subdevices
 
 
-def __get_subsensors_from_smoke_detector(item, api_interface):
+def __get_subsensors_from_smoke_detector(item, api_interface, filter_key):
+    if filter_key != 'smoke_detector_id':
+        return []
     subsensors = []
     subsensors.append(WinkSmokeDetector(item, api_interface))
     subsensors.append(WinkCoDetector(item, api_interface))
