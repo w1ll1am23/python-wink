@@ -185,6 +185,9 @@ def get_thermostats():
 def get_hubs():
     return get_devices(device_types.HUB)
 
+def get_fans():
+    return get_devices(device_types.FAN)
+
 
 def get_subscription_key():
     response_dict = wink_api_fetch()
