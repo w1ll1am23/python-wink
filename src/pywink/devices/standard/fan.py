@@ -108,11 +108,11 @@ class WinkFan(WinkDevice):
         """
         desired_state = {"timer": timer}
 
-        response = self.api_interface.set_device_state(self, {
+        resp = self.api_interface.set_device_state(self, {
             "desired_state": desired_state
         })
 
-        self._update_state_from_response(response)
+        self._update_state_from_response(resp)
 
     def __repr__(self):
         return "<Wink Fan %s %s>" % (
