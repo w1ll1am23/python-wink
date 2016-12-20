@@ -19,7 +19,7 @@
             "powered_updated_at":1481335377.2255096,
             "timer":0,
             "timer_updated_at":1481335377.2255096,
-            "direction":null,
+            "direction":"forward",
             "direction_updated_at":null,
             "connection":true,
             "connection_updated_at":1481714301.2966304,

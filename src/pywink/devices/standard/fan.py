@@ -42,12 +42,12 @@ class WinkFan(WinkDevice):
     def fan_timer_range(self):
         capabilities = self.json_state.get('capabilities', {})
         cap_fields = capabilities.get('fields', [])
-        fan_directions = None
+        fan_timer_range = None
         for field in cap_fields:
             _field = field.get('field')
             if _field == 'timer':
-                fan_directions = field.get('range')
-        return fan_directions
+                fan_timer_range = field.get('range')
+        return fan_timer_range
 
     def current_fan_speed(self):
         return self._last_reading.get('mode', None)
