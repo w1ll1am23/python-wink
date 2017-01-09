@@ -57,19 +57,50 @@ class WinkLock(WinkDevice):
     def device_id(self):
         return self.json_state.get('lock_id', self.name())
 
-    def alarm_status(self):
-        return self.json_state.get('alarm_enabled', False)
+    @property
+    def alarm_enabled(self):
+        return self._last_reading.get('alarm_enabled', False)
 
-    def vacation_mode_status(self):
-        return self.json_state.get('vacation_mode_enabled', False)
+    @property
+    def alarm_mode(self):
+        return self._last_reading.get('alarm_mode', None)
 
-    def beeper_status(self):
-        return self.json_state.get('beeper_enabled', False)
+    @property
+    def vacation_mode(self):
+        return self._last_reading.get('vacation_mode_enabled', False)
 
-    def auto_lock_status(self):
-        return self.json_state.get('auto_lock_enabled', False)
+    @property
+    def beeper(self):
+        return self._last_reading.get('beeper_enabled', False)
 
-    def set_alarm_state(self):
+    @property
+    def auto_lock(self):
+        return self._last_reading.get('auto_lock_enabled', False)
+
+    @property
+    def alarm_sensitivity(self):
+        return self._last_reading.get('alarm_sensitivity', None)
+
+    def set_alarm_sensitivity(self, mode):
+        """
+        :param mode: 1.0 for Very sensitive, 0.2 for not sensitive.
+                     Steps in values of 0.2.
+        :return: nothing
+        """
+        values = {"desired_state": {"alarm_sensitivity": mode}}
+        response = self.api_interface.set_device_state(self, values)
+        self._update_state_from_response(response)
+
+    def set_alarm_mode(self, mode):
+        """
+        :param mode: one of [None, "activity", "tamper", "forced_entry"]
+        :return: nothing
+        """
+        values = {"desired_state": {"alarm_mode": mode}}
+        response = self.api_interface.set_device_state(self, values)
+        self._update_state_from_response(response)
+
+    def set_alarm_state(self, state):
         """
         :param state: a boolean of ture (on) or false ('off')
         :return: nothing
@@ -78,7 +109,7 @@ class WinkLock(WinkDevice):
         response = self.api_interface.set_device_state(self, values)
         self._update_state_from_response(response)
 
-    def set_vacation_mode(self):
+    def set_vacation_mode(self, state):
         """
         :param state: a boolean of ture (on) or false ('off')
         :return: nothing
@@ -87,7 +118,7 @@ class WinkLock(WinkDevice):
         response = self.api_interface.set_device_state(self, values)
         self._update_state_from_response(response)
 
-    def set_beeper_mode(self):
+    def set_beeper_mode(self, state):
         """
         :param state: a boolean of ture (on) or false ('off')
         :return: nothing
@@ -281,7 +312,7 @@ class WinkSiren(WinkBinarySwitch):
         return self._last_reading.get('mode', None)
 
     def current_auto_shutoff(self):
-        return self._last_reading('auto_shutoff', None)
+        return self._last_reading.get('auto_shutoff', None)
 
     def set_mode(self, mode):
         """
@@ -296,8 +327,6 @@ class WinkSiren(WinkBinarySwitch):
         response = self.api_interface.set_device_state(self, values)
         self._update_state_from_response(response)
 
-        self._last_call = (time.time(), state)
-
     def set_auto_shutoff(self, time):
         """
         :param time: an int, one of [None (never), 30, 60, 120]
@@ -310,8 +339,6 @@ class WinkSiren(WinkBinarySwitch):
         }
         response = self.api_interface.set_device_state(self, values)
         self._update_state_from_response(response)
-
-        self._last_call = (time.time(), state)
 
 
 class WinkKey(WinkDevice):
