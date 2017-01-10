@@ -392,8 +392,8 @@ class WinkDoorBellButton(_WinkCapabilitySensor):
 
     def __init__(self, device_state_as_json, api_interface):
         super(WinkDoorBellButton, self).__init__(device_state_as_json, api_interface,
-                                             self.CAPABILITY,
-                                             self.UNIT, 'door_bells')
+                                                 self.CAPABILITY,
+                                                 self.UNIT, 'door_bells')
 
     def button_pressed_boolean(self):
         """
@@ -420,8 +420,8 @@ class WinkDoorBellMotion(_WinkCapabilitySensor):
 
     def __init__(self, device_state_as_json, api_interface):
         super(WinkDoorBellMotion, self).__init__(device_state_as_json, api_interface,
-                                             self.CAPABILITY,
-                                             self.UNIT, 'door_bells')
+                                                 self.CAPABILITY,
+                                                 self.UNIT, 'door_bells')
 
     def motion_boolean(self):
         """
