@@ -352,9 +352,18 @@ def __get_subsensors_from_smoke_detector(item, api_interface, filter_key):
 def __get_subsensors_from_door_bell(item, api_interface, filter_key):
     if filter_key != 'door_bell_id':
         return []
+
+    capabilities = [cap['field'] for cap in item.get('capabilities', {}).get('fields', [])]
+
+    if not capabilities:
+        return []
+
     subsensors = []
-    subsensors.append(WinkDoorBellMotion(item, api_interface))
-    subsensors.append(WinkDoorBellButton(item, api_interface))
+
+    if WinkDoorBellMotion.CAPABILITY in capabilities:
+        subsensors.append(WinkDoorBellMotion(item, api_interface))
+    if WinkDoorBellButton.CAPABILITY in capabilities:
+        subsensors.append(WinkDoorBellButton(item, api_interface))
     return subsensors
 
 
