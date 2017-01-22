@@ -8,7 +8,7 @@
 - Support for main Powerstrip device
 - Support for Wink Relay buttons
 - Support for Smoke and CO severity sensors
-- Support for Cameras
+- Support for Canary cameras
 - Throttle API calls to /users/me/wink_devices to once every 60 seconds
 - Sensor object are built based on capability not returned object_type
 
