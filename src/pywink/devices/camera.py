@@ -1,13 +1,16 @@
 from pywink.devices.base import WinkDevice
 
 
-class WinkCamera(WinkDevice):
+class WinkCanaryCamera(WinkDevice):
     """
-    Represents a Wink camera.
+    Represents a Wink Canary camera.
+
+    The Canary camera has three modes "home", "away", or "night" these avaible modes
+    are not listed in the device's JSON.
     """
 
     def __init__(self, device_state_as_json, api_interface):
-        super(WinkCamera, self).__init__(device_state_as_json, api_interface)
+        super(WinkCanaryCamera, self).__init__(device_state_as_json, api_interface)
 
     def state(self):
         return self.mode()
@@ -20,7 +23,7 @@ class WinkCamera(WinkDevice):
 
     def set_mode(self, mode):
         """
-        :param mode:  a str, one of [armed, disarmed, privacy]
+        :param mode:  a str, one of [home, away, night]
         :return: nothing
         """
         values = {"desired_state": {"mode": mode}}

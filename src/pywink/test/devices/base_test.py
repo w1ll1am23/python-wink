@@ -21,7 +21,7 @@ from pywink.devices.shade import WinkShade
 from pywink.devices.sprinkler import WinkSprinkler
 from pywink.devices.button import WinkButton
 from pywink.devices.gang import WinkGang
-from pywink.devices.camera import WinkCamera
+from pywink.devices.camera import WinkCanaryCamera
 
 
 class BaseTests(unittest.TestCase):
@@ -78,7 +78,7 @@ class BaseTests(unittest.TestCase):
         devices = get_devices_from_response_dict(self.response_dict, device_types.ALL_SUPPORTED_DEVICES)
         skip_types = [WinkFan, WinkPorkfolioBalanceSensor, WinkPorkfolioNose, WinkBinarySwitch, WinkHub,
                       WinkLightBulb, WinkThermostat, WinkKey, WinkPowerStrip, WinkPowerStripOutlet,
-                      WinkRemote, WinkShade, WinkSprinkler, WinkButton, WinkGang, WinkCamera]
+                      WinkRemote, WinkShade, WinkSprinkler, WinkButton, WinkGang, WinkCanaryCamera]
         for device in devices:
             if type(device) in skip_types:
                 self.assertIsNone(device.battery_level())
