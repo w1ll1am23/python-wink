@@ -303,10 +303,10 @@ class ApiTests(unittest.TestCase):
         old_states = {}
         for device in devices:
             device.api_interface = self.api_interface
-            device.set_mode("armed")
+            device.set_mode("away")
             device.set_privacy(True)
             device.update_state()
-        self.assertEqual(device.state(), "armed")
+        self.assertEqual(device.state(), "away")
         self.assertTrue(device.private())
 
     def test_get_fan_updated_states_from_api(self):
