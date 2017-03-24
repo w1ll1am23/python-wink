@@ -1,7 +1,7 @@
-from pywink.devices.binary_switch import WinkBinarySwitch
+from pywink.devices.base import WinkDevice
 
 
-class WinkSiren(WinkBinarySwitch):
+class WinkSiren(WinkDevice):
     """
     Represents a Wink Siren.
     """
@@ -48,7 +48,7 @@ class WinkSiren(WinkBinarySwitch):
         """
         Update state with latest info from Wink API.
         """
-        response = self.api_interface.get_device_state(self, type_override="siren")
+        response = self.api_interface.get_device_state(self)
         return self._update_state_from_response(response)
 
     def set_state(self, state):
@@ -57,5 +57,5 @@ class WinkSiren(WinkBinarySwitch):
         :return: nothing
         """
         values = {"desired_state": {"powered": state}}
-        response = self.api_interface.set_device_state(self, values, type_override="siren")
+        response = self.api_interface.set_device_state(self, values)
         self._update_state_from_response(response)
