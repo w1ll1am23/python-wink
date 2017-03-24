@@ -50,3 +50,12 @@ class WinkSiren(WinkBinarySwitch):
         """
         response = self.api_interface.get_device_state(self, type_override="siren")
         return self._update_state_from_response(response)
+
+    def set_state(self, state):
+        """
+        :param state:   a boolean of true (on) or false ('off')
+        :return: nothing
+        """
+        values = {"desired_state": {"powered": state}}
+        response = self.api_interface.set_device_state(self, values, type_override="siren")
+        self._update_state_from_response(response)
