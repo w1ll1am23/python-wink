@@ -33,6 +33,9 @@ class WinkSiren(WinkDevice):
     def chime_mode(self):
         return self._last_reading.get('activate_chime', None)
 
+    def chime_cycles(self):
+        return self._last_reading.get('chime_cycles', None)
+
     def set_siren_volume(self, volume):
         """
         :param volume: one of [low, medium, high]
@@ -100,7 +103,7 @@ class WinkSiren(WinkDevice):
         """
         :param sound: a str, one of ["doorbell", "fur_elise", "doorbell_extended", "alert",
                                      "william_tell", "rondo_alla_turca", "police_siren",
-                                     ""evacuation", "beep_beep", "beep"] 
+                                     ""evacuation", "beep_beep", "beep"]
         :return: nothing
         """
         values = {
@@ -111,19 +114,17 @@ class WinkSiren(WinkDevice):
         response = self.api_interface.set_device_state(self, values)
         self._update_state_from_response(response)
 
-    def set_chime(self, state):
+    def set_chime(self, sound, cycles=None):
         """
         :param sound: a str, one of ["doorbell", "fur_elise", "doorbell_extended", "alert",
                                      "william_tell", "rondo_alla_turca", "police_siren",
-                                     ""evacuation", "beep_beep", "beep", "inactive"] 
+                                     ""evacuation", "beep_beep", "beep", "inactive"]
         :return: nothing
         """
-        values = {
-            "desired_state": {
-                "activate_chime": sound
-            }
-        }
-        response = self.api_interface.set_device_state(self, values)
+        desired_state = {"activate_chime": sound}
+        if cycles is not None:
+            desired_state.update({"chime_cycles": cycles})
+        response = self.api_interface.set_device_state(self, desired_state)
         self._update_state_from_response(response)
 
     def set_auto_shutoff(self, timer):
