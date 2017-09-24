@@ -12,8 +12,50 @@ class WinkSiren(WinkDevice):
     def mode(self):
         return self._last_reading.get('mode', None)
 
+    def siren_volume(self):
+        return self._last_reading.get('siren_volume', None)
+
+    def chime_volume(self):
+        return self._last_reading.get('chime_volume', None)
+
     def auto_shutoff(self):
         return self._last_reading.get('auto_shutoff', None)
+
+    def strobe_enabled(self):
+        return self._last_reading.get('strobe_enabled', None)
+
+    def chime_strobe_enabled(self):
+        return self._last_reading.get('chime_strobe_enabled', None)
+
+    def siren_sound(self):
+        return self._last_reading.get('siren_sound', None)
+
+    def chime_mode(self):
+        return self._last_reading.get('activate_chime', None)
+
+    def set_siren_volume(self, volume):
+        """
+        :param volume: one of [low, medium, high]
+        """
+        values = {
+            "desired_state": {
+                "siren_volume": volume
+            }
+        }
+        response = self.api_interface.set_device_state(self, values)
+        self._update_state_from_response(response)
+
+    def set_chime_volume(self, volume):
+        """
+        :param volume: one of [low, medium, high]
+        """
+        values = {
+            "desired_state": {
+                "chime_volume": volume
+            }
+        }
+        response = self.api_interface.set_device_state(self, values)
+        self._update_state_from_response(response)
 
     def set_mode(self, mode):
         """
@@ -23,6 +65,62 @@ class WinkSiren(WinkDevice):
         values = {
             "desired_state": {
                 "mode": mode
+            }
+        }
+        response = self.api_interface.set_device_state(self, values)
+        self._update_state_from_response(response)
+
+    def set_siren_strobe_enabled(self, enabled):
+        """
+        :param enabled:  True or False
+        :return: nothing
+        """
+        values = {
+            "desired_state": {
+                "strobe_enabled": enabled
+            }
+        }
+        response = self.api_interface.set_device_state(self, values)
+        self._update_state_from_response(response)
+
+    def set_chime_strobe_enabled(self, enabled):
+        """
+        :param enabled:  True or False
+        :return: nothing
+        """
+        values = {
+            "desired_state": {
+                "chime_strobe_enabled": enabled
+            }
+        }
+        response = self.api_interface.set_device_state(self, values)
+        self._update_state_from_response(response)
+
+    def set_siren_sound(self, sound):
+        """
+        :param sound: a str, one of ["doorbell", "fur_elise", "doorbell_extended", "alert",
+                                     "william_tell", "rondo_alla_turca", "police_siren",
+                                     ""evacuation", "beep_beep", "beep"] 
+        :return: nothing
+        """
+        values = {
+            "desired_state": {
+                "siren_sound": sound
+            }
+        }
+        response = self.api_interface.set_device_state(self, values)
+        self._update_state_from_response(response)
+
+    def set_chime(self, state):
+        """
+        :param sound: a str, one of ["doorbell", "fur_elise", "doorbell_extended", "alert",
+                                     "william_tell", "rondo_alla_turca", "police_siren",
+                                     ""evacuation", "beep_beep", "beep", "inactive"] 
+        :return: nothing
+        """
+        values = {
+            "desired_state": {
+                "activate_chime": sound
             }
         }
         response = self.api_interface.set_device_state(self, values)
