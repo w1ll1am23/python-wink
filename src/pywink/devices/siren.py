@@ -124,7 +124,8 @@ class WinkSiren(WinkDevice):
         desired_state = {"activate_chime": sound}
         if cycles is not None:
             desired_state.update({"chime_cycles": cycles})
-        response = self.api_interface.set_device_state(self, desired_state)
+        response = self.api_interface.set_device_state(self,
+                                                       {"desired_state": desired_state})
         self._update_state_from_response(response)
 
     def set_auto_shutoff(self, timer):
@@ -152,6 +153,12 @@ class WinkSiren(WinkDevice):
         :param state:   a boolean of true (on) or false ('off')
         :return: nothing
         """
-        values = {"desired_state": {"powered": state}}
-        response = self.api_interface.set_device_state(self, values)
+        desired_state = {"powered": state}
+        if self.siren_sound() is not None:
+            if not state:
+                desired_state.update({"siren_sound": "inactive"})
+            if state and self.siren_sound() == "inactive":
+                desired_state.update({"siren_sound": "alert"})
+        response = self.api_interface.set_device_state(self,
+                                                       {"desired_state": desired_state})
         self._update_state_from_response(response)
