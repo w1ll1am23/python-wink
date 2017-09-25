@@ -37,7 +37,7 @@ class SirenTests(unittest.TestCase):
 
     def test_siren_mode_is_none_for_dome_siren(self):
         dome_siren = get_devices_from_response_dict(self.response_dict, device_types.SIREN)[1]
-        self.assertEqual(dome_siren.mode(), None)
+        self.assertIsNone(dome_siren.mode())
 
     def test_siren_volume_for_dome_siren(self):
         dome_siren = get_devices_from_response_dict(self.response_dict, device_types.SIREN)[1]
@@ -65,4 +65,4 @@ class SirenTests(unittest.TestCase):
 
     def test_dome_siren_chime_cycles(self):
         dome_siren = get_devices_from_response_dict(self.response_dict, device_types.SIREN)[1]
-        self.assertEqual(dome_siren.chime_cycles(), None)
+        self.assertIsNone(dome_siren.chime_cycles())
