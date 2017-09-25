@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.6.1
+- Thermostat fixes for away mode.
+
 ## 1.6.0
 - Support for water heaters. Added support for adding new lock key codes.
 

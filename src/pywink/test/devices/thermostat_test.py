@@ -9,10 +9,10 @@ from pywink.devices import types as device_types
 from pywink.devices.thermostat import WinkThermostat
 
 
-class FanTests(unittest.TestCase):
+class ThermostatTests(unittest.TestCase):
 
     def setUp(self):
-        super(FanTests, self).setUp()
+        super(ThermostatTests, self).setUp()
         self.api_interface = mock.MagicMock()
 
     def test_thermostat_state(self):
@@ -60,6 +60,26 @@ class FanTests(unittest.TestCase):
         self.assertTrue(thermostat.away())
         self.assertEqual(thermostat2.away(), None)
 
+
+    def test_thermostat_users_away_generic(self):
+        device_list = []
+        response_dict = {}
+        _json_file = open('{}/api_responses/go_control_thermostat.json'.format(os.path.dirname(__file__)))
+        device_list.append(json.load(_json_file))
+        _json_file.close()
+        response_dict["data"] = device_list
+        thermostat = get_devices_from_response_dict(response_dict, device_types.THERMOSTAT)[0]
+        self.assertTrue(thermostat.away() is None)
+
+    def test_thermostat_profile(self):
+        device_list = []
+        response_dict = {}
+        _json_file = open('{}/api_responses/ecobee_thermostat.json'.format(os.path.dirname(__file__)))
+        device_list.append(json.load(_json_file))
+        _json_file.close()
+        response_dict["data"] = device_list
+        thermostat = get_devices_from_response_dict(response_dict, device_types.THERMOSTAT)[0]
+        self.assertTrue(thermostat.away())
 
     def test_thermostat_current_fan_mode(self):
         device_list = []
