@@ -51,9 +51,15 @@ class FanTests(unittest.TestCase):
         _json_file = open('{}/api_responses/nest.json'.format(os.path.dirname(__file__)))
         device_list.append(json.load(_json_file))
         _json_file.close()
+        _json_file = open('{}/api_responses/go_control_thermostat.json'.format(os.path.dirname(__file__)))
+        device_list.append(json.load(_json_file))
+        _json_file.close()
         response_dict["data"] = device_list
         thermostat = get_devices_from_response_dict(response_dict, device_types.THERMOSTAT)[0]
+        thermostat2 = get_devices_from_response_dict(response_dict, device_types.THERMOSTAT)[1]
         self.assertTrue(thermostat.away())
+        self.assertEqual(thermostat2.away(), None)
+
 
     def test_thermostat_current_fan_mode(self):
         device_list = []
