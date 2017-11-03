@@ -159,7 +159,6 @@ class WinkApiInterface(object):
 
         Args:
             device (WinkDevice): The device the change is being requested for.
-            state (Dict): The state being requested.
             id_override (String, optional): A device ID used to override the
                 passed in device's ID. Used to make changes on sub-devices.
                 i.e. Outlet in a Powerstrip. The Parent device's ID.
