@@ -562,8 +562,11 @@ def get_binary_switch_groups():
 
 def get_subscription_key():
     response_dict = wink_api_fetch()
-    first_device = response_dict.get('data')[0]
-    return get_subscription_key_from_response_dict(first_device)
+    try:
+        first_device = response_dict.get('data')[0]
+        return get_subscription_key_from_response_dict(first_device)
+    except IndexError:
+        raise WinkAPIException("No Wink devices associated with account.")
 
 
 def get_subscription_key_from_response_dict(device):
@@ -578,7 +581,6 @@ def wink_api_fetch(end_point='wink_devices'):
     _LOGGER.debug(response)
     if response.status_code == 200:
         return response.json()
-
     if response.status_code == 401:
         raise WinkAPIException("401 Response from Wink API.  Maybe Bearer token is expired?")
     else:
