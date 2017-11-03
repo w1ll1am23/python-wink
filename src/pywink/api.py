@@ -116,7 +116,7 @@ class WinkApiInterface(object):
                                         data=json.dumps(state),
                                         headers=LOCAL_API_HEADERS,
                                         verify=False, timeout=3)
-            except:
+            except requests.exceptions.RequestException:
                 _LOGGER.error("Error sending local control request. Sending request online")
                 return self.set_device_state(device, state, id_override, type_override)
             response_json = arequest.json()
@@ -188,7 +188,7 @@ class WinkApiInterface(object):
                 arequest = requests.get(url_string,
                                         headers=LOCAL_API_HEADERS,
                                         verify=False, timeout=3)
-            except:
+            except requests.exceptions.RequestException:
                 _LOGGER.error("Error sending local control request. Sending request online")
                 return self.get_device_state(device, id_override, type_override)
             response_json = arequest.json()
@@ -220,10 +220,13 @@ class WinkApiInterface(object):
         url_string = "{}/{}s/{}/update_firmware".format(self.BASE_URL,
                                                         object_type,
                                                         object_id)
-        arequest = requests.post(url_string,
-                                 headers=API_HEADERS)
-        response_json = arequest.json()
-        return response_json
+        try:
+            arequest = requests.post(url_string,
+                                     headers=API_HEADERS)
+            response_json = arequest.json()
+            return response_json
+        except requests.exceptions.RequestException:
+            return None
 
     def remove_device(self, device, id_override=None, type_override=None):
         """
@@ -244,12 +247,16 @@ class WinkApiInterface(object):
         url_string = "{}/{}s/{}".format(self.BASE_URL,
                                         object_type,
                                         object_id)
-        arequest = requests.delete(url_string,
-                                   headers=API_HEADERS)
-        if arequest.status_code == 204:
-            return True
-        _LOGGER.error("Failed to remove device. Status code: " + arequest.status_code)
-        return False
+        try:
+            arequest = requests.delete(url_string,
+                                       headers=API_HEADERS)
+            if arequest.status_code == 204:
+                return True
+            _LOGGER.error("Failed to remove device. Status code: " + arequest.status_code)
+            return False
+        except requests.exceptions.RequestException:
+            _LOGGER.error("Failed to remove device. Status code: " + arequest.status_code)
+            return False
 
     def create_lock_key(self, device, new_device_json, id_override=None, type_override=None):
         """
@@ -271,11 +278,14 @@ class WinkApiInterface(object):
         url_string = "{}/{}s/{}/keys".format(self.BASE_URL,
                                              object_type,
                                              object_id)
-        arequest = requests.post(url_string,
-                                 data=json.dumps(new_device_json),
-                                 headers=API_HEADERS)
-        response_json = arequest.json()
-        return response_json
+        try:
+            arequest = requests.post(url_string,
+                                     data=json.dumps(new_device_json),
+                                     headers=API_HEADERS)
+            response_json = arequest.json()
+            return response_json
+        except requests.exceptions.RequestException:
+            return None
 
 
 def disable_local_control():
