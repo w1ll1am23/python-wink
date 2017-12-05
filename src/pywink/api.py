@@ -384,7 +384,7 @@ def get_authorization_url(client_id, redirect_uri):
 
 
 def request_token(code, client_secret):
-    _LOGGER.debug("code: %s Client_secret: %s", code,  client_secret)
+    _LOGGER.debug("code: %s Client_secret: %s", code, client_secret)
     data = {
         "client_secret": client_secret,
         "grant_type": "authorization_code",
