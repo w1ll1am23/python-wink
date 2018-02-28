@@ -608,7 +608,7 @@ def wink_api_fetch(end_point='wink_devices', retry=True):
         if retry:
             refresh_access_token()
             # Only retry once so pass in False for retry value
-            wink_api_fetch(end_point, False)
+            return wink_api_fetch(end_point, False)
         else:
             raise WinkAPIException("401 Response from Wink API.")
     else:
