@@ -101,7 +101,7 @@ class WinkApiInterface(object):
         if ALLOW_LOCAL_CONTROL:
             if device.local_id() is not None:
                 hub = HUBS.get(device.hub_id())
-                if hub is None:
+                if hub is None or hub["token"] is None:
                     return self.set_device_state(device, state, id_override, type_override)
             else:
                 return self.set_device_state(device, state, id_override, type_override)
@@ -171,7 +171,7 @@ class WinkApiInterface(object):
         if ALLOW_LOCAL_CONTROL:
             if device.local_id() is not None:
                 hub = HUBS.get(device.hub_id())
-                if hub is not None:
+                if hub is not None and hub["token"] is not None:
                     ip = hub["ip"]
                     access_token = hub["token"]
                 else:
